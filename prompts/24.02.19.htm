@@ -181,6 +181,7 @@
           let minimapBounds = [
             [minimapXScale(dataBounds[0][0]), minimapYScale(dataBounds[0][1])],
             [minimapXScale(dataBounds[1][0]), minimapYScale(dataBounds[1][1])]];
+
           brushGroup.call(brush.move, minimapBounds);
         }
 
@@ -228,7 +229,10 @@
         brushGroup.call(brush);
 
         function brushed({ event }) {
-          console.log(event);
+
+          if (event.sourceEvent === undefined) {
+            return;
+          }
 
           let transform = d3.zoomTransform(chartArea.node());
           let txScale = transform.rescaleX(xScale);
@@ -236,6 +240,9 @@
 
           let corner = [minimapXScale.invert(event.selection[0, 0]),
           minimapYScale.invert(event.selection[0, 1])];
+
+          transform.x = -xScale(corner[0]) * transform.k;
+          transform.y = -yScale(corner[1]) * transform.k;
 
           chartArea.call(plotZoom.transform,); //this results in infinite loop
         }
